@@ -115,12 +115,13 @@ strong { color: var(--ink); font-weight: 600; }
 .settings-toggle::marker { content: ""; }
 .settings-toggle::-webkit-details-marker { display: none; }
 .settings-toggle:hover, .settings-menu[open] .settings-toggle { color: var(--accent); background: var(--surface); }
-.settings-toggle:focus-visible, .theme-select:focus-visible { outline-offset: 3px; }
+.settings-toggle:focus-visible { outline-offset: 3px; }
 .settings-toggle .icon { width: 16px; height: 16px; flex-basis: 16px; }
 .settings-panel { position: absolute; top: calc(100% + 9px); right: 0; z-index: 20; width: 220px; max-width: calc(100vw - 36px); padding: 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--page); box-shadow: 0 5px 16px var(--shadow); }
 .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .settings-label { color: var(--body); font: 12px/1.5 var(--sans); }
-.theme-select { width: 118px; min-width: 0; padding: 6px 8px; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); background: var(--surface); font: 12px/1.4 var(--sans); cursor: pointer; }
+.theme-option { width: 30px; padding: 0; }
+.theme-option .icon { width: 16px; height: 16px; flex-basis: 16px; }
 [data-page="not-found"] .settings-menu { margin-left: auto; }
 .navigation { display: flex; align-self: stretch; align-items: stretch; gap: 30px; margin-left: auto; }
 .nav-link { position: relative; display: flex; align-items: center; color: var(--navigation); font-size: 14px; white-space: nowrap; }

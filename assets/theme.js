@@ -14,8 +14,8 @@
   function updateControls() {
     const chinese = root.lang.startsWith('zh');
     const labels = chinese
-      ? { system: '跟随系统', light: '浅色', dark: '深色' }
-      : { system: 'System', light: 'Light', dark: 'Dark' };
+      ? { system: '跟随系统', light: '浅色模式', dark: '深色模式' }
+      : { system: 'Follow system', light: 'Light theme', dark: 'Dark theme' };
     const menu = document.querySelector('.settings-menu');
     if (!menu) return;
     menu.hidden = false;
@@ -23,11 +23,13 @@
     toggle.setAttribute('aria-label', chinese ? '设置' : 'Settings');
     toggle.title = chinese ? '设置' : 'Settings';
     menu.querySelector('.settings-label').textContent = chinese ? '主题' : 'Theme';
-    const select = menu.querySelector('.theme-select');
-    select.setAttribute('aria-label', chinese ? '显示主题' : 'Color theme');
-    select.value = preferredTheme;
-    for (const option of select.options) {
-      option.textContent = labels[option.value];
+    const group = menu.querySelector('.theme-switch');
+    group.setAttribute('aria-label', chinese ? '显示主题' : 'Color theme');
+    for (const button of group.querySelectorAll('.theme-option')) {
+      const mode = button.dataset.theme;
+      button.setAttribute('aria-pressed', String(mode === preferredTheme));
+      button.setAttribute('aria-label', labels[mode]);
+      button.title = labels[mode];
     }
   }
 
@@ -47,15 +49,17 @@
     updateControls();
     const menu = document.querySelector('.settings-menu');
     if (!menu) return;
-    menu.querySelector('.theme-select').addEventListener('change', (event) => {
-      preferredTheme = event.target.value;
-      applyTheme();
-      try {
-        localStorage.setItem('preferred-theme', preferredTheme);
-      } catch {
-        // Manual switching also works when persistent storage is unavailable.
-      }
-    });
+    for (const button of menu.querySelectorAll('.theme-option')) {
+      button.addEventListener('click', () => {
+        preferredTheme = button.dataset.theme;
+        applyTheme();
+        try {
+          localStorage.setItem('preferred-theme', preferredTheme);
+        } catch {
+          // Manual switching also works when persistent storage is unavailable.
+        }
+      });
+    }
     document.addEventListener('click', (event) => {
       if (!menu.contains(event.target)) menu.open = false;
     });
