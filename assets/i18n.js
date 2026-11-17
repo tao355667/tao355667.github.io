@@ -61,7 +61,6 @@ const chineseTranslations = {
   "qualifications.english": "英语 CET-6",
   "qualifications.tableTennis": "乒乓球国家三级裁判",
   "qualifications.badminton": "羽毛球国家三级裁判",
-  "backToTop": "回到顶部 ↑",
   "notFound.title": "页面未找到",
   "notFound.description": "这个页面可能已移动，或链接有误。",
   "notFound.home": "返回主页 →"
@@ -69,14 +68,16 @@ const chineseTranslations = {
 
 const localizedElements = [...document.querySelectorAll('[data-i18n]')];
 const englishContents = new Map(localizedElements.map((element) => [element, element.innerHTML]));
-const languageSwitch = document.querySelector('.language-switch');
-const languageOptions = [...document.querySelectorAll('.language-option')];
+const languageToggle = document.querySelector('.floating-language-toggle');
 const attributeTranslations = [
   ['.site-name', 'aria-label', 'Chentao Xu, back to top', '许辰涛，返回主页'],
   ['.navigation', 'aria-label', 'Main navigation', '主导航'],
   ['.profile', 'aria-label', 'Profile', '个人资料'],
   ['.portrait', 'alt', 'Portrait of Chentao Xu', '许辰涛的照片'],
   ['.research-interests', 'aria-label', 'Research interests', '研究方向'],
+  ['.floating-actions', 'aria-label', 'Page controls', '页面操作'],
+  ['.back-to-top', 'aria-label', 'Back to top', '回到顶部'],
+  ['.back-to-top', 'title', 'Back to top', '回到顶部'],
 ];
 let currentLanguage = 'en';
 
@@ -105,12 +106,12 @@ function setLanguage(language) {
   document.querySelector('meta[name="description"]')?.setAttribute('content', description);
   document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title);
   document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
-  if (languageSwitch) {
-    languageSwitch.setAttribute('aria-label', chinese ? '语言' : 'Language');
-    languageSwitch.hidden = false;
-    for (const option of languageOptions) {
-      option.setAttribute('aria-pressed', String(option.dataset.language === currentLanguage));
-    }
+  if (languageToggle) {
+    languageToggle.querySelector('.floating-language-label').textContent = chinese ? 'EN' : '中';
+    languageToggle.lang = chinese ? 'en' : 'zh-CN';
+    languageToggle.setAttribute('aria-label', chinese ? 'Switch to English' : '切换为中文');
+    languageToggle.title = chinese ? 'Switch to English' : '切换为中文';
+    languageToggle.hidden = false;
   }
   document.dispatchEvent(new Event('languagechange'));
 }
@@ -123,13 +124,11 @@ try {
 }
 setLanguage(savedLanguage);
 
-for (const option of languageOptions) {
-  option.addEventListener('click', () => {
-    setLanguage(option.dataset.language);
-    try {
-      localStorage.setItem('preferred-language', currentLanguage);
-    } catch {
-      // Switching languages does not depend on persistent storage.
-    }
-  });
-}
+languageToggle?.addEventListener('click', () => {
+  setLanguage(currentLanguage === 'en' ? 'zh' : 'en');
+  try {
+    localStorage.setItem('preferred-language', currentLanguage);
+  } catch {
+    // Switching languages does not depend on persistent storage.
+  }
+});
