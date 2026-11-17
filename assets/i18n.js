@@ -42,6 +42,7 @@ const chineseTranslations = {
   "patent.title": "一种非接触远程心率估计系统",
   "patent.authors": "北京体育大学 · 导师第一作者，本人第二作者",
   "patent.number": "申请号：202511619577.5 <span>2025.12.12</span>",
+  "patent.link": "中国知网",
   "research": "研究工作",
   "research.mdwphys.title": "时空频联合建模与鲁棒 rPPG 估计",
   "research.mdwphys.description": "联合建模空间、时间与频率信息，针对运动和光照干扰增强生理信号提取能力。",
