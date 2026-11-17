@@ -185,8 +185,9 @@ sup { font-size: 9px; }
 .publication-details { margin-top: 10px; font-size: 12px; }
 .publication-details summary { width: fit-content; cursor: pointer; color: var(--accent); font-size: 11px; }
 .publication-details summary::marker { font-size: 9px; }
-.abstract-content { margin-top: 10px; padding: 14px 16px; background: var(--surface); border-left: 2px solid var(--summary-rule); font-size: 13px; line-height: 1.9; }
+.abstract-content { margin-top: 10px; padding: 14px 16px; background: var(--surface); border-left: 2px solid var(--summary-rule); font-size: 13px; line-height: 1.9; white-space: normal; word-break: normal; overflow-wrap: break-word; hyphens: none; }
 .abstract-content p + p { margin-top: 12px; }
+.abstract-content .nowrap { white-space: nowrap; }
 .publication-links { margin-top: 10px; display: flex; align-items: center; gap: 18px; font-size: 11px; color: var(--muted); }
 .publication-links a { display: inline-flex; align-items: center; gap: 3px; }
 .publication-links .icon { width: 12px; height: 12px; flex-basis: 12px; }
