@@ -2,6 +2,7 @@
 (() => {
   const root = document.documentElement;
   const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+  const favicon = document.querySelector('link[rel="icon"]');
   const validThemes = ['system', 'light', 'dark'];
   let preferredTheme = 'system';
   try {
@@ -38,6 +39,10 @@
     const dark = preferredTheme === 'dark' || (preferredTheme === 'system' && systemTheme.matches);
     for (const meta of document.querySelectorAll('meta[name="theme-color"]')) {
       meta.content = dark ? '#151b22' : '#ffffff';
+    }
+    if (favicon) {
+      const iconUrl = new URL(dark ? 'favicon-dark.svg' : 'favicon-light.svg', favicon.href).href;
+      if (favicon.href !== iconUrl) favicon.href = iconUrl;
     }
     updateControls();
   }
