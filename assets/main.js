@@ -1,7 +1,16 @@
 // Keep the navigation in step with the section being read.
 const navigationLinks = [...document.querySelectorAll('.nav-link')];
 const sections = navigationLinks.map((link) => document.querySelector(link.hash));
+const profileSidebar = document.querySelector('.profile');
 let scheduled = false;
+
+function updateProfilePosition() {
+  if (!profileSidebar) return;
+  const top = Number.parseFloat(getComputedStyle(profileSidebar).top) || 0;
+  const fits = window.matchMedia('(min-width: 761px)').matches
+    && profileSidebar.offsetHeight + top + 24 <= window.innerHeight;
+  profileSidebar.classList.toggle('is-sticky', fits);
+}
 
 function updateNavigation() {
   const offset = document.querySelector('.masthead').offsetHeight + 45;
@@ -29,6 +38,12 @@ function scheduleUpdate() {
 
 window.addEventListener('scroll', scheduleUpdate, { passive: true });
 window.addEventListener('resize', scheduleUpdate, { passive: true });
+window.addEventListener('resize', updateProfilePosition, { passive: true });
 window.addEventListener('pageshow', scheduleUpdate);
+window.addEventListener('pageshow', updateProfilePosition);
 document.addEventListener('languagechange', scheduleUpdate);
+document.addEventListener('languagechange', updateProfilePosition);
+document.addEventListener('fontsizechange', scheduleUpdate);
+document.addEventListener('fontsizechange', updateProfilePosition);
+updateProfilePosition();
 updateNavigation();

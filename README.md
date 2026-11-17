@@ -18,7 +18,7 @@ python3 -m http.server 8000
 - `assets/i18n.js`：中文翻译与语言切换。首次访问默认英文，之后记住手动选择。
 - 右下角悬浮按钮提供返回顶部与语言切换，主题选项仍位于顶部设置菜单。
 - `assets/style.css`：系统无衬线字体、响应式布局与浅色/深色配色。
-- `assets/theme.js`：主题切换与偏好记忆，默认跟随系统，也可手动选择浅色或深色。
+- `assets/theme.js`：主题与字号偏好。主题默认跟随系统；字号可选大、中、小，默认中，选择后自动保存。
 - `assets/`：样式、交互脚本与照片。
 - `.github/workflows/pages.yml`：GitHub Pages 自动部署。
 
