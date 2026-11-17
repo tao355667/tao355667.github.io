@@ -205,8 +205,16 @@ sup { font-size: 9px; }
 .experience-item .experience-subtitle { color: var(--secondary); font-size: 11px; margin-top: 3px; }
 .awards-heading { border-top: 1px solid var(--line); padding-top: 27px; margin-top: 34px; }
 .awards-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; }
-.awards-list li { position: relative; padding-left: 14px; display: flex; align-items: baseline; justify-content: space-between; gap: 20px; font-size: 13px; }
-.awards-list li::before { content: ""; width: 4px; height: 4px; background: var(--list-marker); border-radius: 50%; position: absolute; left: 0; top: 10px; }
+.awards-list li { position: relative; isolation: isolate; padding-left: 14px; display: flex; align-items: baseline; justify-content: space-between; gap: 20px; font-size: 13px; transition: color .15s ease; }
+.awards-list li::before { content: ""; width: 4px; height: 4px; background: var(--list-marker); border-radius: 50%; position: absolute; left: 0; top: 10px; transition: background-color .15s ease; }
+.awards-list li::after { content: ""; position: absolute; inset: -4px -8px; z-index: -1; border: 1px solid transparent; border-radius: 4px; background: transparent; pointer-events: none; transition: background-color .15s ease, border-color .15s ease; }
+.awards-list .date { transition: color .15s ease; }
+@media screen and (hover: hover) and (pointer: fine) {
+  .awards-list li:hover { color: var(--ink); }
+  .awards-list li:hover::after { background: var(--surface); border-color: var(--line); }
+  .awards-list li:hover::before { background: var(--accent); }
+  .awards-list li:hover .date { color: var(--accent); }
+}
 .floating-actions { position: fixed; right: calc(28px + env(safe-area-inset-right, 0px)); bottom: calc(24px + env(safe-area-inset-bottom, 0px)); z-index: 20; display: flex; align-items: center; gap: 10px; }
 .floating-button { appearance: none; display: inline-flex; flex: 0 0 44px; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 50%; color: var(--secondary); background: var(--page); box-shadow: 0 2px 9px var(--shadow); font: 600 12px/1 var(--sans); text-decoration: none; cursor: pointer; transition: color .15s ease, background-color .15s ease; }
 .floating-actions[hidden], .floating-button[hidden] { display: none; }
