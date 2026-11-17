@@ -30,8 +30,6 @@ const chineseTranslations = {
   "underReview": "审稿中",
   "revision": "修改中",
   "abstract": "研究摘要",
-  "abstract.mdwphys": "面向头动、表情与光照变化带来的非平稳噪声，构建轻量级空间、时间与频率联合去噪网络，融合多方向差分、空间注意力聚合、门控 DeltaNet 与可学习小波软阈值去噪。",
-  "abstract.physlnn": "结合差分归一化、3D-CNN 与差分卷积增强微弱生理特征，利用稀疏 NCP 连接的 LTC / CfC 液态模块进行连续时间建模，在三个数据集的交叉实验中展现较强的泛化能力。",
   "conference": "会议论文",
   "conference.title": "远程光电容积脉搏波描记法在生理信息监控中的应用与挑战",
   "conference.authors": "<strong>许辰涛</strong>，杨召阳",
