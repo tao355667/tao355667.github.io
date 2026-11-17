@@ -1,0 +1,11 @@
+.DS_Store
+._*
+.firecrawl/
+node_modules/
+_site/
+tmp/
+test-results/
+playwright-report/
+*.log
+.env
+.env.*

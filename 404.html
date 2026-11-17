@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#151b22" media="(prefers-color-scheme: dark)">
+  <title>Page Not Found · Chentao Xu</title>
+  <link rel="icon" href="/assets/favicon.svg">
+  <script src="/assets/theme.js"></script>
+  <link rel="stylesheet" href="/assets/style.css">
+  <script src="/assets/i18n.js" defer></script>
+  <style>
+    body { min-height: 100vh; display: grid; place-items: center; }
+    main { max-width: 540px; padding: 32px; }
+    h1 { color: var(--ink); font-size: 28px; font-weight: 500; margin: 16px 0; }
+    p { color: var(--muted); margin-bottom: 18px; }
+    .error-code { font-size: 14px; letter-spacing: 3px; margin-top: 25px; }
+    .header-controls { margin: 0 0 25px; }
+  </style>
+</head>
+<body data-page="not-found">
+  <main>
+    <div class="header-controls">
+        <div class="language-switch control-group" role="group" aria-label="Language" hidden>
+          <button class="control-button language-option" type="button" data-language="en" lang="en" aria-label="English" aria-pressed="true" title="English">EN</button>
+          <button class="control-button language-option" type="button" data-language="zh" lang="zh-CN" aria-label="中文" aria-pressed="false" title="中文">中文</button>
+        </div>
+        <details class="settings-menu" hidden>
+          <summary class="settings-toggle" aria-label="Settings" title="Settings"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12.00,4.00 13.95,2.19 15.83,2.76 16.44,5.35 17.66,6.34 20.31,6.44 21.24,8.17 19.85,10.44 20.00,12.00 21.81,13.95 21.24,15.83 18.65,16.44 17.66,17.66 17.56,20.31 15.83,21.24 13.56,19.85 12.00,20.00 10.05,21.81 8.17,21.24 7.56,18.65 6.34,17.66 3.69,17.56 2.76,15.83 4.15,13.56 4.00,12.00 2.19,10.05 2.76,8.17 5.35,7.56 6.34,6.34 6.44,3.69 8.17,2.76 10.44,4.15"/><circle cx="12" cy="12" r="3.2"/></svg></summary>
+          <div class="settings-panel">
+            <label class="settings-row">
+              <span class="settings-label">Theme</span>
+              <select class="theme-select" aria-label="Color theme">
+                <option value="system">System</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select>
+            </label>
+          </div>
+        </details>
+      </div>
+    <p class="error-code">404</p>
+    <h1 data-i18n="notFound.title">Page not found</h1>
+    <p data-i18n="notFound.description">This page may have moved, or the link may be incorrect.</p>
+    <a href="/" data-i18n="notFound.home">Back to homepage →</a>
+  </main>
+</body>
+</html>
