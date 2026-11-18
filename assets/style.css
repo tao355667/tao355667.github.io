@@ -199,9 +199,6 @@ sup { font-size: 0.5625rem; }
 .publication-links .icon { width: 12px; height: 12px; flex-basis: 12px; }
 .patent-number { font-size: 0.6875rem; color: var(--muted); margin-top: 6px; }
 .patent-number span { margin-left: 16px; }
-.research-item { display: grid; grid-template-columns: 109px minmax(0, 1fr); gap: 24px; margin-bottom: 25px; }
-.research-item:last-child { margin-bottom: 0; }
-.research-label { font-family: var(--sans); color: var(--accent); font-weight: 700; font-size: 0.875rem; padding-top: 1px; }
 .research-item h3, .experience-item h3 { font-size: 0.875rem; font-weight: 600; color: var(--ink); line-height: 1.8; }
 .research-item p, .experience-item > p { font-size: 0.8125rem; margin-top: 6px; }
 .research-item .technical-note, .experience-item .technical-note { color: var(--muted); font-size: 0.6875rem; line-height: 1.85; margin-top: 8px; }
@@ -235,8 +232,6 @@ sup { font-size: 0.5625rem; }
   .navigation { gap: 23px; }
   .education-item { grid-template-columns: 142px minmax(0, 1fr); gap: 13px; }
   .degree { display: block; margin: 1px 0 0; }
-  .research-item { grid-template-columns: 90px minmax(0, 1fr); gap: 16px; }
-  .research-label { font-size: 0.75rem; }
   .item-heading { flex-wrap: wrap; gap: 2px 15px; }
 }
 @media (max-width: 900px) {
@@ -279,8 +274,6 @@ sup { font-size: 0.5625rem; }
   .publication .chinese-title { font-size: 0.875rem; }
   .publication-meta { gap: 9px; }
   .status { font-size: 0.5625rem; }
-  .research-item { grid-template-columns: 1fr; gap: 3px; margin-bottom: 24px; }
-  .research-label { font-size: 0.8125rem; }
   .research-item h3, .experience-item h3 { font-size: 0.8125rem; }
   .research-item p, .experience-item > p { font-size: 0.75rem; }
   .awards-list li { font-size: 0.75rem; gap: 10px; }

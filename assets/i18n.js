@@ -1,5 +1,4 @@
 const chineseTranslations = {
-  "research.system.label": "rPPG 系统",
   "skip": "跳至正文",
   "nav.about": "关于",
   "nav.publications": "学术成果",
