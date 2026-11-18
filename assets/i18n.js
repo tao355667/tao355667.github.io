@@ -43,7 +43,7 @@ const chineseTranslations = {
   "research": "工程",
   "research.system.title": "边缘端非接触心率监测系统",
   "research.system.description": "在 Jetson Orin Nano 上完成从 CSI 视频采集、人脸检测、时序窗口构建到 rPPG 推理与心率可视化的完整流程，结合 OpenCV、GStreamer 与信号处理实现心率估计。",
-  "research.system.performance": "TensorRT 加速 YOLOv5Face：约 42 → 7 ms / 帧<br>MDWPhys 单次前向推理：约 234 ms",
+  "research.system.performance": "使用 TensorRT 后，YOLOv5Face 的单帧推理耗时从约 42 毫秒降至约 7 毫秒。<br>MDWPhys 单次前向推理耗时约 234 毫秒。",
   "experience": "项目经历",
   "experience.guoti": "国体智慧体育技术创新中心",
   "experience.guoti.program": "国家重点研发计划 · “主动健康和人口老龄化科技应对”专项",
@@ -62,7 +62,7 @@ const chineseTranslations = {
   "qualifications.badminton": "羽毛球国家三级裁判",
   "notFound.title": "页面未找到",
   "notFound.description": "这个页面可能已移动，或链接有误。",
-  "notFound.home": "返回主页 →"
+  "notFound.home": "返回主页"
 };
 
 const localizedElements = [...document.querySelectorAll('[data-i18n]')];

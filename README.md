@@ -25,7 +25,7 @@ python3 -m http.server 8000
 ## 发布
 
 1. 将项目上传至 `tao355667/tao355667.github.io` 仓库的 `main` 分支。
-2. 在仓库 **Settings → Pages → Build and deployment → Source** 中选择 **GitHub Actions**。
+2. 在仓库的 **Settings** 中打开 **Pages**，找到 **Build and deployment** 下的 **Source**，选择 **GitHub Actions**。
 3. 在 **Actions** 中运行 **Deploy GitHub Pages**，或向 `main` 推送更新。
 
 部署完成后，访问 <https://tao355667.github.io/>。工作流仅上传网站页面与 `assets/`；维护文档和本地检查文件不会发布。
