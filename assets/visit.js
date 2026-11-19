@@ -18,21 +18,36 @@
     display();
   }
 
-  showResult('正在等待统计服务响应。', 'Waiting for the traffic service.');
-  fetch('https://academic-homepage-traffic.xct714328058.workers.dev/visit', {
-    method: 'POST',
-    credentials: 'omit',
-    referrerPolicy: 'no-referrer',
-    keepalive: true,
-  }).then(response => {
-    if (response.status === 204) {
-      showResult('本次主页访问已写入后台。', 'This page view was recorded.');
-    } else {
-      showResult('本次上报未获确认（HTTP ' + response.status + '）。',
-        'The service did not confirm this page view (HTTP ' + response.status + ').');
+  async function reportVisit() {
+    let confirmationTimer;
+    if (checking) {
+      const openedAt = new Date(Date.now() + 8 * 3600000).toISOString().slice(11, 19);
+      showResult('正在等待统计服务响应。', 'Waiting for the traffic service.');
+      confirmationTimer = setTimeout(() => {
+        showResult('10 秒内未收到写入确认。请按打开时间（北京时间 ' + openedAt + '）在后台核对。',
+          'No confirmation within 10 seconds. Check the dashboard near ' + openedAt + ' (UTC+8).');
+      }, 10000);
     }
-  }).catch(() => {
-    showResult('浏览器未收到统计服务的响应，请检查网络或浏览器的拦截提示。',
-      'No response from the traffic service. Check the network or browser blocking notices.');
-  });
+    try {
+      const response = await fetch('https://academic-homepage-traffic.xct714328058.workers.dev/visit', {
+        method: 'POST',
+        credentials: 'omit',
+        referrerPolicy: 'no-referrer',
+        keepalive: true,
+      });
+      if (response.status === 204) {
+        showResult('本次主页访问已写入后台。', 'This page view was recorded.');
+      } else {
+        showResult('本次上报未获确认（HTTP ' + response.status + '）。',
+          'The service did not confirm this page view (HTTP ' + response.status + ').');
+      }
+    } catch {
+      showResult('浏览器未收到统计服务的响应，请检查网络或浏览器的拦截提示。',
+        'No response from the traffic service. Check the network or browser blocking notices.');
+    } finally {
+      clearTimeout(confirmationTimer);
+    }
+  }
+
+  reportVisit();
 })();
