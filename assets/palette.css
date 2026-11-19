@@ -1,6 +1,6 @@
 :root {
   color-scheme: light;
-  --home-canvas: #f2f4f7;
+  --home-canvas: var(--page);
   --page: #ffffff;
   --ink: #191a1d;
   --body: #383b42;
