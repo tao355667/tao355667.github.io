@@ -41,6 +41,29 @@ jobs:
             fi
           done
 
+      - name: Enable homepage analytics
+        if: vars.CLOUDFLARE_WEB_ANALYTICS_TOKEN != ''
+        env:
+          SITE_TOKEN: ${{ vars.CLOUDFLARE_WEB_ANALYTICS_TOKEN }}
+        shell: python
+        run: |
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          token = os.environ["SITE_TOKEN"].strip()
+          if not re.fullmatch(r"[a-fA-F0-9]{32}", token):
+              raise SystemExit("Expected the 32-character site token from the Web Analytics snippet.")
+
+          page = Path("_site/index.html")
+          html = page.read_text(encoding="utf-8")
+          if html.count("</body>") != 1:
+              raise SystemExit("Expected one closing body tag in the homepage.")
+          config = json.dumps({"token": token, "spa": False})
+          beacon = f"""<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{config}'></script>"""
+          page.write_text(html.replace("</body>", f"  {beacon}\n</body>"), encoding="utf-8")
+
       - name: Upload website
         uses: actions/upload-pages-artifact@v4
         with:

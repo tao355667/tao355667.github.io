@@ -32,6 +32,17 @@ python3 -m http.server 8000
 
 部署配置参考 [GitHub Pages 官方文档](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)。
 
+## 主页访问统计
+
+登录 Cloudflare Web Analytics 可免费查看主页的浏览量、访问次数、来源网站和访客所在国家或地区。数据从启用后的访问开始积累。[Cloudflare Web Analytics 说明](https://developers.cloudflare.com/web-analytics/about/)
+
+1. 登录 [Cloudflare Web Analytics](https://dash.cloudflare.com/?to=/:account/web-analytics)，选择 **Add a site**，填写 `tao355667.github.io`。
+2. 打开 **Manage site**，从统计代码的 `data-cf-beacon` 中复制公开的 `token` 值。
+3. 打开 [GitHub 仓库的 Actions 变量设置](https://github.com/tao355667/tao355667.github.io/settings/variables/actions)，选择 **New repository variable**。名称填写 `CLOUDFLARE_WEB_ANALYTICS_TOKEN`，值填写刚复制的站点 token。
+4. 运行 **Deploy GitHub Pages**。部署完成后访问一次主页，几分钟后回到 Cloudflare 查看报表。
+
+发布流程仅在配置了站点 token 时为线上主页加入统计脚本。本地预览和 404 页面不计入统计，点击页内导航也不会增加浏览量。要停用统计，删除该仓库变量并重新部署。
+
 ## 图标来源
 
 - ORCID：[官方 iD 图标](https://orcid.org/assets/vectors/orcid.logo.icon.svg)，保留原色和图形。
