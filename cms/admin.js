@@ -137,6 +137,11 @@ $('login-form').addEventListener('submit', event => {
   }, '正在登录…');
 });
 $('refresh').addEventListener('click', () => run(() => loadPage([null]), '正在更新…'));
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && session && cursors.length === 1 && !busy) {
+    run(() => loadPage([null]), '正在更新…');
+  }
+});
 $('previous').addEventListener('click', () => run(() => loadPage(cursors.slice(0, -1)), '正在读取…'));
 $('next').addEventListener('click', () => run(() => loadPage([...cursors, nextCursor]), '正在读取…'));
 $('logout').addEventListener('click', () => run(async () => {
