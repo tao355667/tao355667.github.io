@@ -58,7 +58,7 @@
     root.dataset.theme = preferredTheme;
     const dark = preferredTheme === 'dark' || (preferredTheme === 'system' && systemTheme.matches);
     for (const meta of document.querySelectorAll('meta[name="theme-color"]')) {
-      meta.content = dark ? '#151b22' : '#ffffff';
+      meta.content = dark ? '#1a1b1f' : '#ffffff';
     }
     if (favicon) {
       const iconUrl = new URL(dark ? 'favicon-dark.svg' : 'favicon-light.svg', favicon.href).href;

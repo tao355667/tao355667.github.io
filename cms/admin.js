@@ -11,6 +11,11 @@ const timeFormat = new Intl.DateTimeFormat('sv-SE', {
 let session = '';
 let cursors = [null];
 let nextCursor = null;
+let snapshot = 0;
+let pageSize = 20;
+let filters = {};
+const countryNames = typeof Intl.DisplayNames === 'function'
+  ? new Intl.DisplayNames('zh-CN', { type: 'region' }) : null;
 let busy = false;
 
 function remember(value) {
@@ -27,8 +32,15 @@ function showLogin() {
   nextCursor = null;
   $('rows').replaceChildren();
   $('trend').replaceChildren();
-  $('today').textContent = $('week').textContent = '—';
-  $('pager').hidden = $('dashboard').hidden = $('logout').hidden = true;
+  $('cities').replaceChildren();
+  $('filters').reset();
+  filters = {};
+  snapshot = 0;
+  pageSize = 20;
+  for (const id of ['today', 'week', 'ips', 'city-count', 'page-number']) $(id).textContent = '—';
+  $('period').textContent = '近 7 天 · 北京时间';
+  $('matches').textContent = '';
+  $('dashboard').hidden = $('logout').hidden = true;
   $('login').hidden = false;
   $('password').focus();
 }
@@ -42,6 +54,7 @@ async function api(path, method, token) {
     showLogin();
     throw new Error(path === '/login' ? '口令不正确，请重新输入。' : '登录已过期，请重新输入管理口令。');
   }
+  if (res.status === 400) throw new Error('请检查筛选条件和时间范围。');
   if (!res.ok) throw new Error('暂时无法读取后台，请稍后重试。');
   return res.json();
 }
@@ -76,30 +89,75 @@ function drawTrend(days) {
   $('trend').replaceChildren(...items);
 }
 
-async function loadPage(history) {
-  const cursor = history[history.length - 1];
-  const data = await api('/visits' + (cursor ? '?before=' + cursor : ''), 'GET', session);
+function detailCell(label, value, note, className) {
+  const cell = element('td', null);
+  cell.dataset.label = label;
+  cell.append(element('span', value, className));
+  if (note) cell.append(element('small', note));
+  return cell;
+}
+
+function visitRow(visit) {
+  const info = visit.details;
+  const received = timeFormat.format(new Date(visit.visited_at.replace(' ', 'T') + 'Z'));
+  const opened = info?.openedAt ? timeFormat.format(new Date(info.openedAt)) : '';
+  const openLabel = opened ? '打开 ' + (received.slice(0, 10) === opened.slice(0, 10) ? opened.slice(11) : opened) : '';
+  const iso = info?.country || '';
+  const country = countryNames && /^[A-Z]{2}$/.test(iso) ? countryNames.of(iso) : iso;
+  const row = element('tr', null);
+  row.append(
+    detailCell('入库时间', received, openLabel, 'stamp'),
+    detailCell('公网 IP', visit.ip, visit.ip.includes(':') ? 'IPv6' : 'IPv4', 'ip-address'),
+    detailCell('推测位置', visit.city || '未知城市', [country, info?.region].filter(Boolean).join(' · ')),
+    detailCell('访问环境', info ? [info.device, info.browser].filter(Boolean).join(' · ') || '未知' : '未记录', info?.system),
+    detailCell('来源网站', info ? info.source || '未提供' : '未记录'),
+  );
+  return row;
+}
+
+function showOverview(data) {
+  const days = data.days;
+  $('today').textContent = numberFormat.format(days[days.length - 1].count);
+  $('week').textContent = numberFormat.format(days.reduce((sum, day) => sum + day.count, 0));
+  $('ips').textContent = numberFormat.format(data.overview.ips);
+  $('city-count').textContent = numberFormat.format(data.overview.cities);
+  $('period').textContent = days[0].day + ' 至 ' + days[days.length - 1].day + ' · 北京时间';
+  drawTrend(days);
+  $('cities').replaceChildren(...data.cities.map(({city, count}, index) => {
+    const item = element('li', null);
+    item.append(element('span', String(index + 1), 'rank'), element('span', city, 'city-name'),
+      element('span', numberFormat.format(count) + ' 次', 'city-total'));
+    return item;
+  }));
+  $('city-empty').hidden = data.cities.length > 0;
+}
+
+async function loadPage(history, selection = filters, size = pageSize, ceiling = 0) {
+  const params = new URLSearchParams({ ...selection, size });
+  if (history.length > 1) params.set('before', history[history.length - 1]);
+  if (ceiling) params.set('snapshot', ceiling);
+  const data = await api('/visits?' + params, 'GET', session);
+  if (!data.rows.length && history.length > 1) return loadPage([null], selection, size);
   cursors = history;
   nextCursor = data.next;
-  $('today').textContent = numberFormat.format(data.days[data.days.length - 1].count);
-  $('week').textContent = numberFormat.format(data.days.reduce((sum, day) => sum + day.count, 0));
-  drawTrend(data.days);
-  const rows = data.rows.map(visit => {
-    const row = element('tr', null);
-    const localTime = timeFormat.format(new Date(visit.visited_at.replace(' ', 'T') + 'Z'));
-    row.append(element('td', localTime), element('td', visit.ip), element('td', visit.city || '未知'));
-    return row;
-  });
+  snapshot = data.snapshot;
+  filters = selection;
+  pageSize = size;
+  showOverview(data);
+  const rows = data.rows.map(visitRow);
   if (!rows.length) {
     const row = element('tr', null);
-    const cell = element('td', '该范围内暂无访问记录。', 'empty');
-    cell.colSpan = 3;
+    const cell = element('td', Object.keys(selection).length ? '没有符合筛选条件的访问记录。' : '最近七天内暂无访问记录。', 'empty');
+    cell.colSpan = 5;
     row.append(cell);
     rows.push(row);
   }
   $('rows').replaceChildren(...rows);
-  $('page-number').textContent = '第 ' + cursors.length + ' 页';
-  $('pager').hidden = cursors.length === 1 && !nextCursor;
+  $('matches').textContent = (Object.keys(selection).length ? '筛选结果' : '最近七天') + ' · 共 ' + numberFormat.format(data.total) + ' 条';
+  $('page-number').textContent = data.total ? '第 ' + cursors.length + ' / ' + Math.ceil(data.total / pageSize) + ' 页' : '0 页';
+  for (const button of document.querySelectorAll('[data-size]')) {
+    button.setAttribute('aria-pressed', String(Number(button.dataset.size) === pageSize));
+  }
 }
 
 function showDashboard() {
@@ -110,7 +168,7 @@ function showDashboard() {
 async function run(action, message) {
   if (busy) return;
   busy = true;
-  document.querySelectorAll('button').forEach(button => { button.disabled = true; });
+  document.querySelectorAll('button, #filters input').forEach(button => { button.disabled = true; });
   $('status').textContent = message;
   try {
     await action();
@@ -120,7 +178,7 @@ async function run(action, message) {
       ? '连接后台失败，请检查网络后重试。' : error.message;
   } finally {
     busy = false;
-    document.querySelectorAll('button').forEach(button => { button.disabled = false; });
+    document.querySelectorAll('button, #filters input').forEach(button => { button.disabled = false; });
     $('previous').disabled = cursors.length < 2;
     $('next').disabled = !nextCursor;
   }
@@ -136,14 +194,39 @@ $('login-form').addEventListener('submit', event => {
     await loadPage([null]);
   }, '正在登录…');
 });
+$('filters').addEventListener('submit', event => {
+  event.preventDefault();
+  const selection = {};
+  for (const [name, value] of new FormData(event.currentTarget)) {
+    if (value.trim()) selection[name] = value.trim();
+  }
+  run(async () => {
+    if (selection.from && selection.to && selection.from > selection.to) {
+      throw new Error('结束时间应等于或晚于开始时间。');
+    }
+    await loadPage([null], selection);
+  }, '正在筛选…');
+});
+$('clear').addEventListener('click', () => run(async () => {
+  await loadPage([null], {});
+  $('filters').reset();
+}, '正在更新…'));
+async function navigateDetails(history, size, ceiling) {
+  await loadPage(history, filters, size, ceiling);
+  document.querySelector('.records').scrollIntoView({ block: 'start' });
+}
+
+for (const button of document.querySelectorAll('[data-size]')) {
+  button.addEventListener('click', () => run(() => navigateDetails([null], Number(button.dataset.size), 0), '正在读取…'));
+}
 $('refresh').addEventListener('click', () => run(() => loadPage([null]), '正在更新…'));
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && session && cursors.length === 1 && !busy) {
     run(() => loadPage([null]), '正在更新…');
   }
 });
-$('previous').addEventListener('click', () => run(() => loadPage(cursors.slice(0, -1)), '正在读取…'));
-$('next').addEventListener('click', () => run(() => loadPage([...cursors, nextCursor]), '正在读取…'));
+$('previous').addEventListener('click', () => run(() => navigateDetails(cursors.slice(0, -1), pageSize, snapshot), '正在读取…'));
+$('next').addEventListener('click', () => run(() => navigateDetails([...cursors, nextCursor], pageSize, snapshot), '正在读取…'));
 $('logout').addEventListener('click', () => run(async () => {
   try { await api('/logout', 'POST', session); }
   finally { showLogin(); }

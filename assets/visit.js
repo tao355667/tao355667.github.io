@@ -19,9 +19,17 @@
   }
 
   async function reportVisit() {
+    const started = Date.now();
+    const fields = new URLSearchParams({ opened: String(started) });
+    try {
+      const referrer = new URL(document.referrer);
+      if (['https:', 'http:'].includes(referrer.protocol) && referrer.origin !== location.origin) {
+        fields.set('source', referrer.hostname);
+      }
+    } catch { /* The browser may omit the referring site. */ }
     let confirmationTimer;
     if (checking) {
-      const openedAt = new Date(Date.now() + 8 * 3600000).toISOString().slice(11, 19);
+      const openedAt = new Date(started + 8 * 3600000).toISOString().slice(11, 19);
       showResult('正在等待统计服务响应。', 'Waiting for the traffic service.');
       confirmationTimer = setTimeout(() => {
         showResult('10 秒内未收到写入确认。请按打开时间（北京时间 ' + openedAt + '）在后台核对。',
@@ -31,6 +39,7 @@
     try {
       const response = await fetch('https://academic-homepage-traffic.xct714328058.workers.dev/visit', {
         method: 'POST',
+        body: fields,
         credentials: 'omit',
         referrerPolicy: 'no-referrer',
         keepalive: true,

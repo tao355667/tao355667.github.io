@@ -1,0 +1,89 @@
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --ink: #191a1d;
+  --body: #383b42;
+  --muted: #626b7b;
+  --brand: #176bfa;
+  --on-brand: #ffffff;
+  --accent: #175ec9;
+  --line: #e5e7eb;
+  --line-soft: #eff0f2;
+  --surface: #f6f7f9;
+  --navigation: #535965;
+  --secondary: #505763;
+  --icon: #697487;
+  --tag-text: #175ec9;
+  --tag-surface: #edf3ff;
+  --review-text: #826223;
+  --review-surface: #f8f4e9;
+  --published-text: #486c5c;
+  --published-surface: #eef5f1;
+  --publication-title: #191a1d;
+  --summary-rule: #90b7ff;
+  --list-marker: #8aa5d1;
+  --selection: #dce9ff;
+  --masthead-surface: rgba(255, 255, 255, .97);
+  --shadow: rgba(0, 0, 0, .14);
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+@media screen and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    color-scheme: dark;
+    --page: #1a1b1f;
+    --ink: #f4f5f6;
+    --body: #d0d1d6;
+    --muted: #a2a8b5;
+    --brand: #598fff;
+    --on-brand: #101723;
+    --accent: #6797ff;
+    --line: #35373d;
+    --line-soft: #2c2e34;
+    --surface: #222429;
+    --navigation: #c0c4ce;
+    --secondary: #b4bbc8;
+    --icon: #9aa4b7;
+    --tag-text: #82aaff;
+    --tag-surface: #202e48;
+    --review-text: #ddc38b;
+    --review-surface: #373124;
+    --published-text: #a9cfba;
+    --published-surface: #24372e;
+    --publication-title: #f4f5f6;
+    --summary-rule: #476bad;
+    --list-marker: #7594c9;
+    --selection: #2a4065;
+    --masthead-surface: rgba(26, 27, 31, .97);
+    --shadow: rgba(0, 0, 0, .32);
+  }
+}
+@media screen {
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #1a1b1f;
+    --ink: #f4f5f6;
+    --body: #d0d1d6;
+    --muted: #a2a8b5;
+    --brand: #598fff;
+    --on-brand: #101723;
+    --accent: #6797ff;
+    --line: #35373d;
+    --line-soft: #2c2e34;
+    --surface: #222429;
+    --navigation: #c0c4ce;
+    --secondary: #b4bbc8;
+    --icon: #9aa4b7;
+    --tag-text: #82aaff;
+    --tag-surface: #202e48;
+    --review-text: #ddc38b;
+    --review-surface: #373124;
+    --published-text: #a9cfba;
+    --published-surface: #24372e;
+    --publication-title: #f4f5f6;
+    --summary-rule: #476bad;
+    --list-marker: #7594c9;
+    --selection: #2a4065;
+    --masthead-surface: rgba(26, 27, 31, .97);
+    --shadow: rgba(0, 0, 0, .32);
+  }
+}

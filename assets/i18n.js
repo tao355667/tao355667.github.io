@@ -60,7 +60,7 @@ const chineseTranslations = {
   "qualifications.english": "英语 CET-6",
   "qualifications.tableTennis": "乒乓球国家三级裁判",
   "qualifications.badminton": "羽毛球国家三级裁判",
-  "traffic.notice": "为统计主页流量，本站记录访问时间、公网 IP 地址和推测城市，每小时清理已满七天的记录。",
+  "traffic.notice": "为统计主页流量，本站记录打开和入库时间、公网 IP、推测位置、设备类型、浏览器、系统及可用的来源域名，每小时清理已满七天的记录。",
   "notFound.title": "页面未找到",
   "notFound.description": "这个页面可能已移动，或链接有误。",
   "notFound.home": "返回主页"
