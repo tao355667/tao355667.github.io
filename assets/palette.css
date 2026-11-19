@@ -1,7 +1,6 @@
 :root {
   color-scheme: light;
   --home-canvas: #f2f4f7;
-  --home-panel: #ffffff;
   --page: #ffffff;
   --ink: #191a1d;
   --body: #383b42;
@@ -30,7 +29,6 @@
   :root:not([data-theme="light"]):not([data-theme="dark"]) {
     color-scheme: dark;
     --home-canvas: #141518;
-    --home-panel: #202126;
     --page: #1a1b1f;
     --ink: #f4f5f6;
     --body: #d0d1d6;
@@ -59,7 +57,6 @@
   :root[data-theme="dark"] {
     color-scheme: dark;
     --home-canvas: #141518;
-    --home-panel: #202126;
     --page: #1a1b1f;
     --ink: #f4f5f6;
     --body: #d0d1d6;
