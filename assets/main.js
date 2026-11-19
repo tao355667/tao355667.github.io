@@ -47,3 +47,16 @@ document.addEventListener('fontsizechange', scheduleUpdate);
 document.addEventListener('fontsizechange', updateProfilePosition);
 updateProfilePosition();
 updateNavigation();
+
+// The private visit log is only for the published homepage.
+if (location.origin === 'https://tao355667.github.io'
+    && ['/', '/index.html'].includes(location.pathname)) {
+  fetch('https://academic-homepage-traffic.xct714328058.workers.dev/visit', {
+    method: 'POST',
+    credentials: 'omit',
+    referrerPolicy: 'no-referrer',
+    keepalive: true,
+  }).catch(() => {
+    // The homepage works even when the visitor blocks the reporting endpoint.
+  });
+}

@@ -1,0 +1,16 @@
+name = "academic-homepage-traffic"
+main = "worker.mjs"
+compatibility_date = "2026-11-19"
+workers_dev = true
+preview_urls = false
+
+[[d1_databases]]
+binding = "DB"
+database_name = "homepage-traffic"
+database_id = "550e38ae-9910-4032-bf8e-25b84dc215b6"
+
+[triggers]
+crons = ["17 * * * *"]
+
+[observability]
+enabled = false

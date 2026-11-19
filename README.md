@@ -43,6 +43,27 @@ python3 -m http.server 8000
 
 发布流程仅在配置了站点 token 时为线上主页加入统计脚本。本地预览和 404 页面不计入统计，点击页内导航也不会增加浏览量。要停用统计，删除该仓库变量并重新部署。
 
+### 查看 IP 和城市
+
+登录 Cloudflare，打开 **D1 SQL Database** 中的 `homepage-traffic`。选择 **Explore Data** 并打开 `visits` 表，或在 **Console** 中运行以下查询，按北京时间查看最近 100 条记录。
+
+```sql
+SELECT datetime(visited_at, '+8 hours') AS beijing_time, ip, city
+FROM visits
+WHERE visited_at > datetime('now', '-7 days')
+ORDER BY visited_at DESC, id DESC
+LIMIT 100;
+```
+
+线上主页每次加载时向 Worker 发送一次请求。Worker 使用 Cloudflare 提供的公网出口 IP 和城市，在 D1 中以 UTC 保存访问时间。城市无法判断时留空。接口只接收上报，查看明细需要登录 Cloudflare。记录满七天后由每小时运行的任务清理。网络或浏览器拦截上报时，访问仍可继续，两套统计的数字也可能不同。
+
+Worker 的代码、数据库绑定和定时任务位于 `traffic/`。维护时在仓库根目录运行以下命令。第一条命令可重复执行，第二条命令发布 Worker。
+
+```sh
+npx wrangler@4 d1 execute homepage-traffic --remote --config traffic/wrangler.toml --file traffic/schema.sql
+npx wrangler@4 deploy --config traffic/wrangler.toml
+```
+
 ## 图标来源
 
 - ORCID：[官方 iD 图标](https://orcid.org/assets/vectors/orcid.logo.icon.svg)，保留原色和图形。
