@@ -12,6 +12,19 @@ body { margin: 0; color: var(--ink); background: var(--page); -webkit-font-smoot
 .brand-mark i { width: 4px; border-radius: 2px; background: var(--brand); height: 55%; }
 .brand-mark i:nth-child(2) { height: 95%; } .brand-mark i:last-child { height: 72%; }
 main { padding-block: clamp(26px, 4vw, 48px); }
+body:has(#workspace:not([hidden])) .wrap { max-width: 1420px; width: calc(100% - 48px); }
+#workspace { display: grid; grid-template-columns: 168px minmax(0, 1fr); align-items: start; gap: clamp(18px, 2.3vw, 34px); }
+.work-area { min-width: 0; }
+.sidebar { position: sticky; top: 18px; display: grid; gap: 4px; padding: 7px; border: 1px solid var(--line); border-radius: 12px; }
+.sidebar button { justify-content: flex-start; gap: 10px; min-height: 42px; padding-inline: 12px; border-color: transparent; }
+.sidebar button[aria-pressed="true"] { color: var(--accent); background: var(--tag-surface); font-weight: 650; }
+.sidebar svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; }
+.password-panel { margin-top: 22px; max-width: 580px; }
+#password-form { display: grid; gap: 7px; max-width: 420px; margin-top: 16px; }
+#password-form label:not(:first-child) { margin-top: 9px; }
+#password-form .caption { margin: 0; }
+#password-form button { justify-self: start; margin-top: 10px; }
+body:has(#workspace:not([hidden])) #status { margin-inline-start: calc(168px + clamp(18px, 2.3vw, 34px)); }
 h1, h2, figure, ol, p { margin: 0; }
 h1 { font-size: clamp(1.65rem, 3vw, 2.2rem); letter-spacing: -.045em; line-height: 1.32; }
 h2, figcaption { font-size: 1.04rem; line-height: 1.5; font-weight: 650; }
@@ -73,12 +86,16 @@ td small { display: block; font-size: .75rem; margin-top: 3px; color: var(--mute
 .segments button { padding: .27rem .55rem; border: 0; border-radius: 5px; }
 #status:not(:empty) { margin-top: 15px; color: var(--secondary); }
 body:has(.login:not([hidden])) #status { max-width: 390px; margin-inline: auto; }
-@media (max-width: 1000px) {
+@media (max-width: 1200px) {
   #filters { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .filter-actions { grid-column: 1 / -1; }
 }
 @media (max-width: 700px) {
-  .wrap { width: calc(100% - 28px); }
+  .wrap, body:has(#workspace:not([hidden])) .wrap { width: calc(100% - 28px); }
+  #workspace { grid-template-columns: minmax(0,1fr); gap: 20px; }
+  .sidebar { position: static; display: flex; justify-self: start; padding: 3px; }
+  .sidebar button { min-height: 38px; }
+  body:has(#workspace:not([hidden])) #status { margin-inline-start: 0; }
   .panel { padding: 16px; }
   .metrics { grid-template-columns: repeat(2,1fr); padding: 0; }
   .metrics div { margin: 13px 0; } .metrics div:nth-child(3) { border: 0; }

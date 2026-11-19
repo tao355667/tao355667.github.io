@@ -1,4 +1,5 @@
 import { handleCms } from './cms.mjs';
+import { readForm } from './form.mjs';
 
 const homepage = 'https://tao355667.github.io';
 
@@ -20,24 +21,6 @@ function clientInfo(ua) {
   else if (/iPhone|iPod|Mobile/i.test(ua)) device = '手机';
   else if (system) device = '电脑';
   return { browser, system, device };
-}
-
-async function readVisitFields(request) {
-  if (!request.body) return new URLSearchParams();
-  const reader = request.body.getReader();
-  const decoder = new TextDecoder();
-  let length = 0;
-  let text = '';
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) return new URLSearchParams(text + decoder.decode());
-    length += value.byteLength;
-    if (length > 2048) {
-      await reader.cancel();
-      return null;
-    }
-    text += decoder.decode(value, { stream: true });
-  }
 }
 
 function visitContext(request, fields) {
@@ -74,7 +57,7 @@ export default {
 
     const headers = { 'Access-Control-Allow-Origin': homepage, 'Cache-Control': 'no-store' };
     try {
-      const fields = await readVisitFields(request);
+      const fields = await readForm(request, 2048);
       if (!fields) return new Response(null, { status: 413, headers });
       await env.DB.prepare('INSERT INTO visits (ip, city, context) VALUES (?, ?, ?)')
         .bind(ip, request.cf?.city || null, JSON.stringify(visitContext(request, fields)))
@@ -88,5 +71,6 @@ export default {
   async scheduled(_event, env) {
     await env.DB.prepare("DELETE FROM visits WHERE visited_at <= datetime('now', '-7 days')").run();
     await env.DB.prepare('DELETE FROM cms_access WHERE expires_at <= unixepoch()').run();
+    await env.DB.prepare('DELETE FROM cms_auth_attempts WHERE expires_at <= unixepoch()').run();
   },
 };

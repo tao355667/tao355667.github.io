@@ -40,20 +40,27 @@ function showLogin() {
   for (const id of ['today', 'week', 'ips', 'city-count', 'page-number']) $(id).textContent = '—';
   $('period').textContent = '近 7 天 · 北京时间';
   $('matches').textContent = '';
+  $('password-form').reset();
+  $('login-form').reset();
+  $('workspace').hidden = true;
   $('dashboard').hidden = $('logout').hidden = true;
   $('login').hidden = false;
   $('password').focus();
 }
 
-async function api(path, method, token) {
+async function api(path, method, token, fields) {
   const res = await fetch(endpoint + path, {
-    method, headers: { Authorization: 'Bearer ' + token },
+    method, headers: token ? { Authorization: 'Bearer ' + token } : {},
+    body: fields,
     credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(15000),
   });
   if (res.status === 401) {
     showLogin();
-    throw new Error(path === '/login' ? '口令不正确，请重新输入。' : '登录已过期，请重新输入管理口令。');
+    throw new Error(path === '/login' ? '密码不正确，请重新输入。' : '登录已过期，请重新输入管理密码。');
   }
+  if (res.status === 429) throw new Error('尝试次数过多，请在 10 分钟后重试。');
+  if (path === '/password' && res.status === 403) throw new Error('当前密码不正确。');
+  if (path === '/password' && res.status === 400) throw new Error('新密码需为 15 至 128 个字符，并与当前密码不同。');
   if (res.status === 400) throw new Error('请检查筛选条件和时间范围。');
   if (!res.ok) throw new Error('暂时无法读取后台，请稍后重试。');
   return res.json();
@@ -160,25 +167,36 @@ async function loadPage(history, selection = filters, size = pageSize, ceiling =
   }
 }
 
-function showDashboard() {
-  $('login').hidden = true;
-  $('logout').hidden = $('dashboard').hidden = false;
+function selectSection(settings) {
+  $('dashboard').hidden = settings;
+  $('settings').hidden = !settings;
+  $('nav-traffic').setAttribute('aria-pressed', String(!settings));
+  $('nav-settings').setAttribute('aria-pressed', String(settings));
+  if (!settings) $('password-form').reset();
+  $('status').textContent = '';
 }
 
-async function run(action, message) {
+function showDashboard() {
+  $('login').hidden = true;
+  $('logout').hidden = $('workspace').hidden = false;
+  selectSection(false);
+}
+
+async function run(action, message, successMessage = '') {
   if (busy) return;
   busy = true;
-  document.querySelectorAll('button, #filters input').forEach(button => { button.disabled = true; });
+  const controls = document.querySelectorAll('button, #filters input, #password-form input');
+  controls.forEach(control => { control.disabled = true; });
   $('status').textContent = message;
   try {
     await action();
-    $('status').textContent = '';
+    $('status').textContent = successMessage;
   } catch (error) {
     $('status').textContent = error instanceof TypeError || error.name === 'TimeoutError'
       ? '连接后台失败，请检查网络后重试。' : error.message;
   } finally {
     busy = false;
-    document.querySelectorAll('button, #filters input').forEach(button => { button.disabled = false; });
+    controls.forEach(control => { control.disabled = false; });
     $('previous').disabled = cursors.length < 2;
     $('next').disabled = !nextCursor;
   }
@@ -187,12 +205,28 @@ async function run(action, message) {
 $('login-form').addEventListener('submit', event => {
   event.preventDefault();
   run(async () => {
-    const data = await api('/login', 'POST', $('password').value.trim());
+    const data = await api('/login', 'POST', null, new URLSearchParams({ password: $('password').value }));
     $('password').value = '';
     remember(data.session);
     showDashboard();
     await loadPage([null]);
   }, '正在登录…');
+});
+$('nav-traffic').addEventListener('click', () => selectSection(false));
+$('nav-settings').addEventListener('click', () => selectSection(true));
+$('password-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const current = $('current-password').value;
+  const password = $('new-password').value;
+  const confirmed = $('confirm-password').value;
+  run(async () => {
+    const length = Array.from(password).length;
+    if (!password.trim() || length < 15 || length > 128) throw new Error('新密码需为 15 至 128 个字符。');
+    if (password === current) throw new Error('新密码应与当前密码不同。');
+    if (password !== confirmed) throw new Error('两次输入的新密码不一致。');
+    await api('/password', 'POST', session, new URLSearchParams({ current, new: password }));
+    showLogin();
+  }, '正在保存…', '密码已修改。请使用新密码重新登录。');
 });
 $('filters').addEventListener('submit', event => {
   event.preventDefault();
@@ -221,7 +255,7 @@ for (const button of document.querySelectorAll('[data-size]')) {
 }
 $('refresh').addEventListener('click', () => run(() => loadPage([null]), '正在更新…'));
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && session && cursors.length === 1 && !busy) {
+  if (document.visibilityState === 'visible' && session && !$('dashboard').hidden && cursors.length === 1 && !busy) {
     run(() => loadPage([null]), '正在更新…');
   }
 });

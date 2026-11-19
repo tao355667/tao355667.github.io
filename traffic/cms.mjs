@@ -1,3 +1,6 @@
+import { digest, issueSession, matchingOwner, reserveAttempt, rotatePassword } from './cms-auth.mjs';
+import { readForm } from './form.mjs';
+
 const siteOrigin = 'https://tao355667.github.io';
 const pageSizes = [20, 50, 100];
 const dayMs = 86400000;
@@ -13,14 +16,6 @@ function json(data, status = 200) {
       'X-Content-Type-Options': 'nosniff',
     },
   });
-}
-
-function hex(bytes) {
-  return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
-}
-
-async function digest(value) {
-  return hex(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value))));
 }
 
 function sqlTime(ms) {
@@ -106,22 +101,27 @@ export async function handleCms(request, env) {
   const path = url.pathname;
   const login = path === '/cms/login' && request.method === 'POST';
   const logout = path === '/cms/logout' && request.method === 'POST';
-  if (!login && !logout && !(path === '/cms/visits' && request.method === 'GET')) {
+  const change = path === '/cms/password' && request.method === 'POST';
+  if (!login && !logout && !change && !(path === '/cms/visits' && request.method === 'GET')) {
     return json(null, 404);
   }
-  const match = /^Bearer ([A-Za-z0-9_-]{32,128})$/.exec(request.headers.get('Authorization') || '');
-  if (!match) return json(null, 401);
-  const keyHash = await digest(match[1]);
+  const bearer = /^Bearer ([A-Za-z0-9_-]{32,128})$/.exec(request.headers.get('Authorization') || '')?.[1];
+  if (!login && !bearer) return json(null, 401);
+  const db = env.DB;
   try {
     if (login) {
-      const owner = await env.DB.prepare('SELECT 1 FROM cms_access WHERE key_hash = ? AND expires_at IS NULL')
-        .bind(keyHash).first();
+      const fields = await readForm(request, 8192);
+      if (!fields) return json(null, 413);
+      const password = fields.get('password') ?? bearer;
+      if (!password || password.length > 256) return json(null, 401);
+      const bucket = await reserveAttempt(db, request);
+      if (!bucket) return json(null, 429);
+      const owner = await matchingOwner(db, password);
       if (!owner) return json(null, 401);
-      const session = hex(crypto.getRandomValues(new Uint8Array(32)));
-      await env.DB.prepare('INSERT INTO cms_access (key_hash, expires_at) VALUES (?, unixepoch() + 28800)')
-        .bind(await digest(session)).run();
-      return json({ session });
+      const session = await issueSession(db, owner, bucket);
+      return session ? json({ session }) : json(null, 401);
     }
+    const keyHash = await digest(bearer);
     if (logout) {
       await env.DB.prepare('DELETE FROM cms_access WHERE key_hash = ? AND expires_at IS NOT NULL')
         .bind(keyHash).run();
@@ -130,6 +130,21 @@ export async function handleCms(request, env) {
     const valid = await env.DB.prepare('SELECT 1 FROM cms_access WHERE key_hash = ? AND expires_at > unixepoch()')
       .bind(keyHash).first();
     if (!valid) return json(null, 401);
+    if (change) {
+      const fields = await readForm(request, 8192);
+      if (!fields) return json(null, 413);
+      const current = fields.get('current') || '';
+      const password = fields.get('new') || '';
+      const length = Array.from(password).length;
+      if (!current || current.length > 256 || !password.trim() || length < 15 || length > 128 || current === password) {
+        return json(null, 400);
+      }
+      const bucket = await reserveAttempt(db, request);
+      if (!bucket) return json(null, 429);
+      const owner = await matchingOwner(db, current);
+      if (!owner) return json(null, 403);
+      return await rotatePassword(db, owner, keyHash, password, bucket) ? json(null) : json(null, 401);
+    }
     const query = readQuery(url.searchParams);
     if (!query) return json(null, 400);
     return json(await report(env.DB, query));
