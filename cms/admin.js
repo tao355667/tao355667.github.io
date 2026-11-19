@@ -60,7 +60,7 @@ async function api(path, method, token, fields) {
   }
   if (res.status === 429) throw new Error('尝试次数过多，请在 10 分钟后重试。');
   if (path === '/password' && res.status === 403) throw new Error('当前密码不正确。');
-  if (path === '/password' && res.status === 400) throw new Error('新密码需为 15 至 128 个字符，并与当前密码不同。');
+  if (path === '/password' && res.status === 400) throw new Error('新密码需为 6 至 128 个字符，并与当前密码不同。');
   if (res.status === 400) throw new Error('请检查筛选条件和时间范围。');
   if (!res.ok) throw new Error('暂时无法读取后台，请稍后重试。');
   return res.json();
@@ -221,7 +221,7 @@ $('password-form').addEventListener('submit', event => {
   const confirmed = $('confirm-password').value;
   run(async () => {
     const length = Array.from(password).length;
-    if (!password.trim() || length < 15 || length > 128) throw new Error('新密码需为 15 至 128 个字符。');
+    if (!password.trim() || length < 6 || length > 128) throw new Error('新密码需为 6 至 128 个字符。');
     if (password === current) throw new Error('新密码应与当前密码不同。');
     if (password !== confirmed) throw new Error('两次输入的新密码不一致。');
     await api('/password', 'POST', session, new URLSearchParams({ current, new: password }));

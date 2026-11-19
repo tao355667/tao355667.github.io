@@ -136,7 +136,7 @@ export async function handleCms(request, env) {
       const current = fields.get('current') || '';
       const password = fields.get('new') || '';
       const length = Array.from(password).length;
-      if (!current || current.length > 256 || !password.trim() || length < 15 || length > 128 || current === password) {
+      if (!current || current.length > 256 || !password.trim() || length < 6 || length > 128 || current === password) {
         return json(null, 400);
       }
       const bucket = await reserveAttempt(db, request);
