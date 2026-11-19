@@ -1,8 +1,12 @@
+import { handleCms } from './cms.mjs';
+
 const homepage = 'https://tao355667.github.io';
 
 export default {
   async fetch(request, env) {
-    if (new URL(request.url).pathname !== '/visit') {
+    const path = new URL(request.url).pathname;
+    if (path.startsWith('/cms/')) return handleCms(request, env);
+    if (path !== '/visit') {
       return new Response(null, { status: 404 });
     }
     if (request.method !== 'POST') {
@@ -28,5 +32,6 @@ export default {
 
   async scheduled(_event, env) {
     await env.DB.prepare("DELETE FROM visits WHERE visited_at <= datetime('now', '-7 days')").run();
+    await env.DB.prepare('DELETE FROM cms_access WHERE expires_at <= unixepoch()').run();
   },
 };
