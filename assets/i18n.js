@@ -15,7 +15,7 @@ const chineseTranslations = {
   "intro": "我是许辰涛，目前在北京体育大学攻读电子信息硕士学位，研究方向为远程光电容积脉搏波描记（rPPG）与深度学习。",
   "interest.title": "目前的兴趣",
   "interest.features": "从数据中学习微弱特征。",
-  "interest.datasets": "对数据集进行精炼，使得用此数据集训练的模型能更好地完成任务。",
+  "interest.datasets": "精炼数据集以提升下游模型性能。",
   "education": "教育背景",
   "expected": "预计毕业",
   "education.bsu": "北京体育大学 <span class=\"degree\">硕士研究生</span>",
@@ -99,8 +99,8 @@ function setLanguage(language) {
     ? (chinese ? '页面未找到 · 许辰涛' : 'Page Not Found · Chentao Xu')
     : (chinese ? '许辰涛 · 学术主页' : 'Chentao Xu · Academic Homepage');
   const description = chinese
-    ? '许辰涛，北京体育大学电子信息硕士研究生。研究方向为远程光电容积脉搏波描记（rPPG）与深度学习，目前关注从数据中学习微弱特征，以及通过精炼数据集提升模型在目标任务上的表现。'
-    : 'Chentao Xu studies remote photoplethysmography (rPPG) and deep learning at Beijing Sport University. His interests include learning subtle features from data and refining training datasets.';
+    ? '许辰涛，北京体育大学电子信息硕士研究生。研究方向为远程光电容积脉搏波描记（rPPG）与深度学习，目前关注从数据中学习微弱特征，以及精炼数据集以提升下游模型性能。'
+    : 'Chentao Xu studies remote photoplethysmography (rPPG) and deep learning at Beijing Sport University. His interests include learning subtle features from data and refining datasets to enhance downstream model performance.';
   document.querySelector('meta[name="description"]')?.setAttribute('content', description);
   document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title);
   document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
